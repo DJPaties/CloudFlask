@@ -1,0 +1,122 @@
+{
+  "intents": [
+    {
+      "tag": "Welcome",
+      "patterns": ["Hello", "Hey there", "How are you?", "Hi", "Greetings"],
+      "responses": ["Hey there! How can I help you?"]
+    },
+    {
+      "tag": "Article 1",
+      "patterns": [
+        "What defines Saudi Arabia with Islam as its religion, Arabic as its language, and Riyadh as its capital?",
+        "Can you tell me about Saudi Arabia being an Arab Islamic state with Arabic as its language and Riyadh as its capital?",
+        "What are the main features of Saudi Arabia as an Arab Islamic state with Islam as its foundation and Arabic as its language?",
+        "Tell me about Saudi Arabia, its religion, language, and capital.",
+        "What makes Saudi Arabia a sovereign Arab Islamic state with Riyadh as its hub?",
+        "Tell me about the Kingdom of Saudi Arabia.",
+        "Give me details about Saudi Arabia.",
+        "I want to learn more about Saudi Arabia.",
+        "Describe Saudi Arabia for me."
+      ],
+      "responses": [
+        "Saudi Arabia is an Arab Islamic state with Islam as its religion, Arabic as its language, and Riyadh as its capital."
+      ]
+    },
+    {
+      "tag": "Article 2",
+      "patterns": [
+        "Which holidays does Saudi Arabia observe, like Eid al-Fitr and Eid al-Adha, according to the Hijri calendar?",
+        "Can you list the holidays in Saudi Arabia, such as Eid al-Fitr and Eid al-Adha, following the Islamic calendar?",
+        "What are the public holidays in Saudi Arabia based on the Hijri calendar?",
+        "Tell me about the main holidays celebrated in Saudi Arabia according to the Islamic calendar.",
+        "What holidays does Saudi Arabia recognize, like Eid al-Fitr and Eid al-Adha, based on the Hijri calendar?",
+        "Tell me about the public holidays in Saudi Arabia.",
+        "What special occasions does Saudi Arabia celebrate?",
+        "Give me information about Saudi Arabian holidays.",
+        "What are the official holidays in Saudi Arabia?"
+      ],
+      "responses": [
+        "Saudi Arabia observes public holidays like Eid al-Fitr and Eid al-Adha, following the Hijri calendar."
+      ]
+    },
+    {
+      "tag": "Article 3",
+      "patterns": [
+        "Describe the flags color",
+        "Describe the flag of Saudi Arabia.",
+        "What does the Saudi Arabian flag look like?",
+        "Can you give me details about the flag of Saudi Arabia?",
+        "Tell me about the national flag of Saudi Arabia.",
+        "What are the characteristics of the Saudi Arabian flag?",
+        "Tell me about Saudi Arabia's flag.",
+        "Give me information about the flag of Saudi Arabia.",
+        "What are the specifications for the flag of Saudi Arabia?",
+        "I want to know more about the flag of Saudi Arabia."
+      ],
+      "responses": [
+        "The flag of Saudi Arabia is green, with a width equal to two-thirds of its length. It bears the inscription 'There is but one God and Muhammad is His Prophet' with a drawn sword underneath. The rules regarding it are defined by law."
+      ]
+    },
+    {
+      "tag": "المادة 1",
+      "patterns": [
+        "ما هو تعريف المملكة العربية السعودية، بالإسلام كديانة لها، والعربية كلغتها، والرياض كعاصمة لها؟",
+        "ما هي ملامح الرئيسية للمملكة العربية السعودية كدولة عربية إسلامية ذات سيادة، بالإسلام كأساس لها والعربية كلغة لها؟",
+        "اشرح المملكة العربية السعودية، ديانتها، لغتها، وعاصمتها.",
+        "ما الذي يجعل المملكة العربية السعودية دولة عربية إسلامية ذات سيادة؟",
+        "اعطني معلومات عن المملكة العربية السعودية."
+      ],
+      "responses": [
+        "المملكة العربية السعودية دولة عربية إسلامية ذات سيادة، والإسلام ديانتها؛ والعربية لغتها، والرياض عاصمتها."
+      ]
+    },
+    {
+      "tag": "المادة ٢",
+      "patterns": [
+        "ما هي الأعياد التي تحتفل بها السعودية، مثل عيد الفطر وعيد الأضحى، باتباع التقويم الهجري؟",
+        "أي الأعياد التي تعترف بها السعودية، مثل عيد الفطر وعيد الأضحى، وفقًا للتقويم الهجري؟",
+        "ما هي الأعياد الرئيسية في السعودية، مثل عيد الفطر وعيد الأضحى، وفقًا للتقويم الهجري؟",
+        "اعطني قائمة بالأعياد في السعودية.",
+        "ما هي المناسبات الخاصة التي تحتفل بها السعودية؟"
+      ],
+      "responses": [
+        "الأعياد الرسمية للسعودية هي عيد الفطر وعيد الأضحى، وتستخدم التقويم الهجري."
+      ]
+    },
+    {
+      "tag": "المادة ٣",
+      "patterns": [
+        "صف علم السعودية.",
+        "ما هو شكل علم السعودية؟",
+        "هل يمكنك إعطائي تفاصيل عن علم السعودية؟",
+        "اشرح العلم الوطني للسعودية.",
+        "احكيلي عن علم السعودية.",
+        "أعطني معلومات عن علم السعودية.",
+        "ما هي المواصفات لعلم السعودية؟",
+        "أريد معرفة المزيد عن علم السعودية."
+      ],
+      "responses": [
+        "علم السعودية أخضر اللون، وعرضه يساوي ثلاثة أرباع طوله، ويحمل النقشة (لا إله إلا الله محمد رسول الله) مع سيف مسلط تحته، وتحدده القوانين."
+      ]
+    },
+    {
+      "tag": "",
+      "patterns": [
+        "السلام عليكم",
+        "مرحباً",
+        "أهلا",
+        "مرحبا بك",
+        "مساء الخير",
+        "صباح الخير",
+        "أهلًا وسهلًا"
+      ],
+      "responses": [
+       
+        "مرحباأهلاً" ,
+        "صباح الخير",      
+        "مساء الخير",
+        "أهلًا وسهلًا"
+      ]
+    }
+  ]
+}
