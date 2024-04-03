@@ -3,7 +3,7 @@ import nltk
 # nltk.download('punkt')
 from nltk.stem.porter import PorterStemmer
 stemmer = PorterStemmer()
-
+nltk.download('punkt')
 def tokenize(sentence):
     """
     split sentence into array of words/tokens
