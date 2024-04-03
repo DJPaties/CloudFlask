@@ -10,6 +10,9 @@ COPY . ./
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN python -m nltk.downloader punkt -d /usr/local/nltk_data
+RUN python -m nltk.downloader averaged_perceptron_tagger -d /usr/local/nltk_data
+RUN python -m nltk.downloader wordnet -d /usr/local/nltk_data
 # Run the web service on container startup. Here we use the gunicorn
 # webserver, with one worker process and 8 threads.
 # For environments with multiple CPU cores, increase the number of workers
