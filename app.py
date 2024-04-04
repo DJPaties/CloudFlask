@@ -5,12 +5,9 @@ import chatbot.chatcopy as ch
 import subprocess
 import os
 from langdetect import detect_langs
-from pydub import AudioSegment
 from flask_cors import CORS
 from base64 import b64decode
-import io
-import soundfile
-from werkzeug.utils import secure_filename
+
 import subprocess
 import speech_recognition as sr
 
@@ -20,13 +17,13 @@ app = Flask(__name__)
 CORS(app)
 UPLOAD_FOLDER = 'static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+temp_answers = {}
 import os
 from google.cloud import texttospeech
 import glob
 import time
 import wave
-def tts(response_message,lang_code):
+def tts(response_message,lang_code,userId):
 
     print("TTS")
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'tts.json'
@@ -54,7 +51,8 @@ def tts(response_message,lang_code):
                     )
 
 
-            filename = 'audioEnglish.wav'
+            # filename = 'audioEnglish.wav'
+            filename = f'{userId}-text.wav'
             with open(f'static/{filename}', 'wb') as out:
                 out.write(response.audio_content)
     
@@ -75,7 +73,8 @@ def tts(response_message,lang_code):
             )
             
 
-            filename = f"audioArabic.wav"
+            # filename = f"audioArabic.wav"
+            filename = f'{userId}-textAr.wav'
             print(filename)
             with open(f'static/{filename}', "wb") as out:
                 out.write(response.audio_content)
@@ -98,33 +97,42 @@ def hello_world():
     return json.dumps(data)
 
 
-@app.route("/answer_audio_web", methods=['POST'])
+@app.route("/get_audio_web", methods=['POST','GET'])
 def get_audio_web():
-    if request.method == 'POST':
+    if request.method == "GET":
+        userID = request.args.get('id')
+
+        # print("USRE IDDD:",userID)
+        # print("USRE IDDD:",request.data)
+        print("USRE IDDD:",userID)
+        # print ()
+        print(temp_answers[int(userID)])
+        return jsonify(temp_answers[int(userID)])
+        
+
+
+@app.route("/post_audio_web", methods=['POST'])
+def post_audio_web():
+    if request.method == 'POST' or request.method=='GET':
         # try:
-        try:
-            os.remove(os.path.join('static/filename.wav'))
-        except FileNotFoundError:
-            print("File Not found Yet")
-            pass
+        
             
         audio_data = request.data
-        # print(audio_data)
-        # print(request.form)
-        
+
         decoded_data = audio_data.decode()
 
         json_decoded_data = json.loads(decoded_data)
-        # decoded_data = decoded_data.replace("\"","")
-        # decoded_data = decoded_data.replace("{","")
-        # decoded_data = decoded_data.replace("base64data:","")
-
-        print(json_decoded_data['base64data'])
-
         dataAduio = b64decode(json_decoded_data['base64data'])
-        print((dataAduio))
-
-        with open('static/receivedSouzane.webm',mode="wb") as fi:
+        # print((dataAduio))
+        print("Audio Decoded")
+        userId = json_decoded_data['id']
+        try:
+            os.remove(os.path.join(f'static/{userId}.wav'))
+        except FileNotFoundError:
+            print("File Not found Yet")
+            pass
+        
+        with open(f'static/{userId}.webm',mode="wb") as fi:
             fi.write(dataAduio)
 
             # import subprocess
@@ -133,8 +141,13 @@ def get_audio_web():
         path = r'C:\Users\WOB\Documents\testFlask\api\static'
 
         # Run the ffmpeg command to convert the webm file to wav
-        process = subprocess.Popen(['ffmpeg', '-i', r'C:/Users/WOB/Documents/testFlask/api/static/receivedSouzane.webm', r'C:/Users/WOB/Documents/testFlask/api/static/filename.wav'], shell=True)
-
+        # process = subprocess.Popen(['ffmpeg', '-i', f'C:\Users\WOB\Documents\testFlask\api\static\{userId}.webm' , f'C:\Users\WOB\Documents\testFlask\api\static\{userId}.wav'], shell=True)
+        # Define the FFmpeg command as a list of strings
+        process = subprocess.Popen([
+            'ffmpeg',
+            '-i', f'C:\\Users\\WOB\\Documents\\testFlask\\api\\static\\{userId}.webm',
+            f'C:\\Users\\WOB\\Documents\\testFlask\\api\\static\\{userId}.wav'
+        ], shell=True)
         # Wait until the process is finished
         process.communicate()
 
@@ -143,7 +156,7 @@ def get_audio_web():
             # open the file
             try:
                 
-                with sr.AudioFile("static/filename.wav") as source:
+                with sr.AudioFile(f"static/{userId}.wav") as source:
                     # listen for the data (load audio to memory)
                     audio_data = r.record(source)
                     # recognize (convert from speech to text)
@@ -156,8 +169,22 @@ def get_audio_web():
 
         print(f"Languague is {json_decoded_data['language']}")
         text = transcribe_audio_wav(json_decoded_data['language'])
-
-        return jsonify({"success": True, "text": text}), 200
+        
+    
+        answer = ch.receive_message(text)
+        answer = json.loads(answer)
+        audio_generate = {'text':answer['text']}
+        tts(audio_generate,json_decoded_data['language'],userId)
+        if json_decoded_data['language'] == 'en':
+            answer['audio_path']=f"http://192.168.1.158:5000/static/{userId}-textAr.wav"
+            
+        elif json_decoded_data['language'] == "ar":
+            answer['audio_path']=f"http://192.168.1.158:5000/static/{userId}-textAr.wav"
+        answer['type'] = "audio"
+        # return json.dumps(answer)
+        temp_answers[userId] = answer
+        print(temp_answers)
+        return jsonify({"success": True}), 200
 
 
 
@@ -171,7 +198,6 @@ def get_audio():
             print("File saved successfully.")
     else:
         print("No file found in the request.")
-    # lang_result = TTSfunctions.transcribe_audio_wav('en')
 
     # Check if JSON data is included in the request
     print(request.form)
@@ -202,6 +228,7 @@ def get_audio():
         
     answer['audio_path'] = f"http://192.168.1.158:5000/static/{audio_name}"
     print(answer['audio_path'])
+    answer['type'] = "audio"
     
     return json.dumps(answer)
 
@@ -215,22 +242,30 @@ def get_answer():
     #For Langauge Detection uncomment this block and configure it
     try:
         langs = detect_langs(resp2['question'])
-       
         detectedlang = max(langs).lang
-    except: detectedlang =  "err" 
+    except: detectedlang =   "err" 
     
+    userID = resp2['id']
     answer = ch.receive_message(resp2['question'])
     answer = json.loads(answer)
     print(detectedlang) 
     if detectedlang == 'en':
-        answer['audio_path']="http://192.168.1.158:5000/static/audioEnglish.wav"
-        tts(answer,"en-US")
+        # model_path = 'en_US-lessac-medium.onnx'
+        # model_json_path = 'en_en_US_lessac_medium_en_US-lessac-medium.onnx.json'
+        answer['audio_path']=f"http://192.168.1.158:5000/static/{userID}-text.wav"
+        tts(answer,"en-US",userID)
     elif detectedlang == "ar":
-        answer['audio_path']="http://192.168.1.158:5000/static/audioArabic.wav"
-        tts(answer,"ar-LB")
+        # model_path = 'ar_JO-kareem-medium.onnx'
+        # model_json_path = 'ar_ar_JO_kareem_medium_ar_JO-kareem-medium.onnx.json'
+        answer['audio_path']=f"http://192.168.1.158:5000/static/{userID}-textAr.wav"
+        tts(answer,"ar-LB",userID)
     else:
-        answer['audio_path']="http://192.168.1.158:5000/static/audioEnglish.wav"
-        tts(answer,"en-US")
+        model_path = 'en_US-lessac-medium.onnx'
+        model_json_path = 'en_en_US_lessac_medium_en_US-lessac-medium.onnx.json'
+        answer['audio_path']=f"http://192.168.1.158:5000/static/{userID}-text.wav"
+        tts(answer,"en-US",userID)
+    
+    answer['type'] = "text"
 
     return json.dumps(answer)
 
