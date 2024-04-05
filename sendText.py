@@ -22,10 +22,11 @@ url = "https://genix.pythonanywhere.com/api/audio"
 import requests
 
 # Define the URL to which you want to send the POST request
-url = 'http://127.0.0.1:5000/answer'
+url = 'http://34.16.119.129:8080/answer'
 
 json_data = {
-    'question': "Hey"
+    'question': "المادة السابعة والعشرون",
+    'id':3
 }
 json_data = json.dumps(json_data)
 

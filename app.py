@@ -7,9 +7,9 @@ import os
 from langdetect import detect_langs
 from flask_cors import CORS
 from base64 import b64decode
-
 import subprocess
 import speech_recognition as sr
+from google.cloud import texttospeech
 
 
 
@@ -18,11 +18,7 @@ CORS(app)
 UPLOAD_FOLDER = 'static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 temp_answers = {}
-import os
-from google.cloud import texttospeech
-import glob
-import time
-import wave
+
 def tts(response_message,lang_code,userId):
 
     print("TTS")
@@ -118,10 +114,23 @@ def post_audio_web():
         
             
         audio_data = request.data
-
+        # print(audio_data)
+        # print(request.form)
+        # print(request.data)
         decoded_data = audio_data.decode()
-
+        # audio_data = request.get_json()
+        # print(audio_data)
+        # print(request.form)
+        # print(request.data)
+        # print(request.json)
+        # # print("FORM",request.form)
         json_decoded_data = json.loads(decoded_data)
+        # decoded_data = decoded_data.replace("\"","")
+        # decoded_data = decoded_data.replace("{","")
+        # decoded_data = decoded_data.replace("base64data:","")
+
+        # print(json_decoded_data['base64data'])
+
         dataAduio = b64decode(json_decoded_data['base64data'])
         # print((dataAduio))
         print("Audio Decoded")
@@ -176,10 +185,10 @@ def post_audio_web():
         audio_generate = {'text':answer['text']}
         tts(audio_generate,json_decoded_data['language'],userId)
         if json_decoded_data['language'] == 'en':
-            answer['audio_path']=f"http://192.168.1.158:5000/static/{userId}-textAr.wav"
+            answer['audio_path']=f"/static/{userId}-textAr.wav"
             
         elif json_decoded_data['language'] == "ar":
-            answer['audio_path']=f"http://192.168.1.158:5000/static/{userId}-textAr.wav"
+            answer['audio_path']=f"/static/{userId}-textAr.wav"
         answer['type'] = "audio"
         # return json.dumps(answer)
         temp_answers[userId] = answer
@@ -191,13 +200,23 @@ def post_audio_web():
 
 @app.route("/answer_audio",methods=['POST','GET'])
 def get_audio():
-
+    # if request.method =="POST":
+    #     fileResult = request.files['messageFile']
+    #     fileResult.save("static/received.wav")
+    #     print(request.files['messageFile'])
+    
+    # print("TEST AFTER SAVE")
+    # json_data = request.json    
+    # language = json_data.get('language')
+    # langResult = TTSfunctions.transcribe_audio_wav(language)
+    
     if 'messageFile' in request.files:
             file_result = request.files['messageFile']
             file_result.save("static/received.wav")
             print("File saved successfully.")
     else:
         print("No file found in the request.")
+    # lang_result = TTSfunctions.transcribe_audio_wav('en')
 
     # Check if JSON data is included in the request
     print(request.form)
@@ -226,9 +245,56 @@ def get_audio():
     elif json_data == "en":
         audio_name == 'audioEngish.wav'
         
-    answer['audio_path'] = f"http://192.168.1.158:5000/static/{audio_name}"
+    answer['audio_path'] = f"/static/{audio_name}"
     print(answer['audio_path'])
     answer['type'] = "audio"
+    # current_working_directory = os.getcwd()
+    # working_dir = os.chdir("../piper")
+    # working_dir_path = os.getcwd()
+    # piper_exe = os.path.join(working_dir_path,"piper.exe") 
+    # new_dir = os.path.join(current_working_directory,"static")
+    # print(working_dir_path)
+    # if request.form.get('language') == "ar":
+    #     model_path ='ar_JO-kareem-medium.onnx'
+    #     model_json_path =  'ar_ar_JO_kareem_medium_ar_JO-kareem-medium.onnx.json'
+    #     command = [
+    #     piper_exe,
+    #     '-c',
+    #     model_json_path,
+    #     '-m',
+    #     model_path,
+    #     '-f',
+    #     f'{new_dir}\\test1.wav'
+    # ]
+    #     text_to_speak = (answer)['text']
+    # else:
+    #     model_json_path =  'en_en_US_lessac_medium_en_US-lessac-medium.onnx.json'
+    #     model_path = 'en_US-lessac-medium.onnx'
+    #     command = [
+    #     piper_exe,
+    #     '-c',
+    #     model_json_path,
+    #     '-m',
+    #     model_path,
+    #     '-f',
+    #     f'{new_dir}\\test1.wav'
+    # ]
+    #     text_to_speak = (answer)['text']
+    
+
+    # try:
+    #     encoded_text = text_to_speak.encode('utf-8')
+    #     subprocess.run(command, shell=True, check=True, cwd=working_dir, input=encoded_text, text=False)
+    #     print("Command executed successfully")
+    # except subprocess.CalledProcessError as e:
+    #     print(f"Error: {e}")
+    
+    # audio  = AudioSegment.from_wav(f"{new_dir}/test1.wav")
+    # sound = AudioSegment.silent(400)
+    # sound_with_silent = sound + audio
+
+    # sound_with_silent.export(f'{new_dir}/test1.wav',format="wav") 
+    # os.chdir(current_working_directory)
     
     return json.dumps(answer)
 
@@ -252,21 +318,51 @@ def get_answer():
     if detectedlang == 'en':
         # model_path = 'en_US-lessac-medium.onnx'
         # model_json_path = 'en_en_US_lessac_medium_en_US-lessac-medium.onnx.json'
-        answer['audio_path']=f"http://192.168.1.158:5000/static/{userID}-text.wav"
+        answer['audio_path']=f"/static/{userID}-text.wav"
         tts(answer,"en-US",userID)
     elif detectedlang == "ar":
         # model_path = 'ar_JO-kareem-medium.onnx'
         # model_json_path = 'ar_ar_JO_kareem_medium_ar_JO-kareem-medium.onnx.json'
-        answer['audio_path']=f"http://192.168.1.158:5000/static/{userID}-textAr.wav"
+        answer['audio_path']=f"/static/{userID}-textAr.wav"
         tts(answer,"ar-LB",userID)
     else:
         model_path = 'en_US-lessac-medium.onnx'
         model_json_path = 'en_en_US_lessac_medium_en_US-lessac-medium.onnx.json'
-        answer['audio_path']=f"http://192.168.1.158:5000/static/{userID}-text.wav"
+        answer['audio_path']=f"/static/{userID}-text.wav"
         tts(answer,"en-US",userID)
     
     answer['type'] = "text"
+    # current_working_directory = os.getcwd()
+    # working_dir = os.chdir("../piper")
+    # working_dir_path = os.getcwd()
+    # piper_exe = os.path.join(working_dir_path,"piper.exe") 
+    # new_dir = os.path.join(current_working_directory,"static")
+    # print(new_dir)
+    # command = [
+    #     piper_exe,
+    #     '-c',
+    #     model_json_path,
+    #     '-m',
+    #     model_path,
+    #     '-f',
+    #     f'{new_dir}\\test1.wav'
+    # ]
+    # text_to_speak = answer['text']
 
+    # try:
+    #     encoded_text = text_to_speak.encode('utf-8')
+    #     subprocess.run(command, shell=True, check=True, cwd=working_dir, input=encoded_text, text=False)
+    #     print("Command executed successfully")
+    # except subprocess.CalledProcessError as e:
+    #     print(f"Error: {e}")
+        
+    # audio  = AudioSegment.from_wav(f"{new_dir}/test1.wav")
+    # sound = AudioSegment.silent(400)
+    # sound_with_silent = sound + audio
+
+    # sound_with_silent.export(f'{new_dir}/test1.wav',format="wav") 
+    # os.chdir(current_working_directory)
+    # return json.dumps(answer)
     return json.dumps(answer)
 
 
