@@ -2,11 +2,11 @@ import random
 import json
 import torch
 import os
-from chatbot.model import NeuralNet
-from chatbot.nltk_utils import bag_of_words, tokenize
+from model import NeuralNet
+from nltk_utils import bag_of_words, tokenize
 import requests
 from sentence_transformers import SentenceTransformer, util
-import chatbot.chatgpt as chatgpt
+
 
 global run_once
 run_once = True
